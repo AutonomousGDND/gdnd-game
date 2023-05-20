@@ -17,10 +17,8 @@ const PixiComponentViewport = PixiComponent("Viewport", {
     create: (props: PixiComponentViewportProps) => {
         const viewport = new PixiViewport({
             screenWidth: props.width,
+            allowPreserveDragOutside: true,
             screenHeight: props.height,
-            worldWidth: props.width * 2,
-            worldHeight: props.height * 2,
-            ticker: props.app.ticker,
             events: props.app.renderer.events,
         });
         viewport.drag().pinch().wheel();

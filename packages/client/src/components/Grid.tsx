@@ -2,7 +2,7 @@ import "@pixi/events";
 import { Sprite, useApp } from "@pixi/react";
 import { Viewport } from "./PixiViewport";
 import tileImage from "../tile.jpg";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // if this gets more complicated, we can export to it's own file. For now its fine.
 const Tile = ({ tile }: { tile: TileProps }) => {
@@ -39,16 +39,20 @@ const createTiles = (count: number) => {
 
 export const Grid = () => {
     const app = useApp();
+    const [tiles, setTiles] = useState<TileProps[]>([]);
 
     useEffect(() => {
         // we have to run `resize` on app load in order for it to automatically resize to the window w/h
         // if we didn't run this, the app wouldn't be full screen until we mantually resized our window
         app.resize();
+
+        // will eventually be listening for world events but we'll just set tiles for now
+        setTiles(createTiles(50));
     }, [app]);
 
     return (
         <Viewport width={window.innerWidth} height={window.innerHeight}>
-            {createTiles(20).map((tile) => (
+            {tiles.map((tile) => (
                 <Tile key={tile.id} tile={tile} />
             ))}
         </Viewport>
