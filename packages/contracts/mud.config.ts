@@ -2,7 +2,7 @@ import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   enums: {
-    TileType: ["Ground", "Wall", "Door"],
+    TileType: ["Fog", "Ground", "Wall", "Door"],
     Direction: ["Up", "Left", "Right", "Down"],
   },
   tables: {
@@ -24,17 +24,12 @@ export default mudConfig({
     },
     DamageComponent: "uint16",
     TileComponent: {
-      // keySchema: {
-      //   x: "int8",
-      //   y: "int8",
-      // },
-      // schema: {
-      //   tile: "TileType",
-      // },
-      schema: {
+      keySchema: {
         x: "int8",
         y: "int8",
-        backgroundImage: "string",
+      },
+      schema: {
+        tile: "TileType",
       },
     },
   },

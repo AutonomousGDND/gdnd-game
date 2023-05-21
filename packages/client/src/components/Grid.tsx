@@ -6,13 +6,22 @@ import { useEffect } from "react";
 import { useEntityQuery } from "@latticexyz/react";
 import { useMUD } from "../MUDContext";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
+import { BigNumber } from "ethers";
+import TileType from "../types/TileType";
+
+const tileImages: Record<TileType, string> = {
+    [TileType.Fog]: '',
+    [TileType.Ground]: tileImage,
+    [TileType.Wall]: tileImage,
+    [TileType.Door]: tileImage,
+}
 
 const TILE_SIZE = 55;
 // if this gets more complicated, we can export to it's own file. For now its fine.
 const Tile = ({ tile }: { tile: TileProps }) => {
     return (
         <Sprite
-            image={tileImage}
+            image={tileImages[tile.type]}
             position={[tile.x * TILE_SIZE, tile.y * TILE_SIZE]}
             scale={{ x: 0.1, y: 0.1 }}
             roundPixels={true}
@@ -22,7 +31,7 @@ const Tile = ({ tile }: { tile: TileProps }) => {
 type TileProps = {
     x: number;
     y: number;
-    backgroundImage: string;
+    type: TileType;
 };
 
 export const Grid = () => {
@@ -37,16 +46,23 @@ export const Grid = () => {
         // we have to run `resize` on app load in order for it to automatically resize to the window w/h
         // if we didn't run this, the app wouldn't be full screen until we mantually resized our window
         app.resize();
-        window["addRandomTile"] = addRandomTile;
+        window.addRandomTile = addRandomTile;
     }, [app]);
 
     return (
         <Viewport width={window.innerWidth} height={window.innerHeight}>
             {tileIds.map((entityId) => {
-                const tileData = getComponentValueStrict(
+                const [x, y] = entityId.split(':').map(n => BigNumber.from(n).toNumber());
+                console.log({ x, y });
+                const { tile } = getComponentValueStrict(
                     TileComponent,
-                    entityId
+                    entityId,
                 );
+                const tileData = {
+                    x,
+                    y,
+                    type: tile as TileType
+                }
                 return <Tile key={entityId} tile={tileData} />;
             })}
         </Viewport>

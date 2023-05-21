@@ -10,4 +10,4 @@ import { StaminaComponent, StaminaComponentTableId } from "./tables/StaminaCompo
 import { BraveryComponent, BraveryComponentTableId } from "./tables/BraveryComponent.sol";
 import { HealthComponent, HealthComponentData, HealthComponentTableId } from "./tables/HealthComponent.sol";
 import { DamageComponent, DamageComponentTableId } from "./tables/DamageComponent.sol";
-import { TileComponent, TileComponentData, TileComponentTableId } from "./tables/TileComponent.sol";
+import { TileComponent, TileComponentTableId } from "./tables/TileComponent.sol";
