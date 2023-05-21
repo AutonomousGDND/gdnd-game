@@ -8,6 +8,9 @@ import { useMUD } from "../MUDContext";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
 import { BigNumber } from "ethers";
 import TileType from "../types/TileType";
+import { io } from 'socket.io-client';
+
+const socket = io('ws://localhost:5000');
 
 const tileImages: Record<TileType, string> = {
     [TileType.Fog]: '',
@@ -22,7 +25,7 @@ const Tile = ({ tile }: { tile: TileProps }) => {
     return (
         <Sprite
             pointerdown={() => {
-                console.log(tile);
+                socket.emit('add-tile', { x: tile.x + 1, y: tile.y });
             }}
             interactive
             image={tileImages[tile.type]}
