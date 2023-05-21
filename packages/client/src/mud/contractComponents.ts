@@ -117,7 +117,9 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
-          tile: RecsType.Number,
+          x: RecsType.Number,
+          y: RecsType.Number,
+          backgroundImage: RecsType.String,
         },
         {
           metadata: {
