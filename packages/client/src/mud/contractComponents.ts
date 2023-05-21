@@ -97,6 +97,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SpeciesComponent: (() => {
+      const tableId = new TableId("", "SpeciesComponent");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     DamageComponent: (() => {
       const tableId = new TableId("", "DamageComponent");
       return defineComponent(

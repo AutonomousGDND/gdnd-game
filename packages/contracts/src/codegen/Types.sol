@@ -15,3 +15,11 @@ enum Direction {
   Right,
   Down
 }
+
+enum Species {
+  Sprite,
+  Goblin,
+  Dwarf,
+  Dragon,
+  Human
+}

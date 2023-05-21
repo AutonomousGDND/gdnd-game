@@ -9,5 +9,6 @@ import { HungerComponent, HungerComponentTableId } from "./tables/HungerComponen
 import { StaminaComponent, StaminaComponentTableId } from "./tables/StaminaComponent.sol";
 import { BraveryComponent, BraveryComponentTableId } from "./tables/BraveryComponent.sol";
 import { HealthComponent, HealthComponentData, HealthComponentTableId } from "./tables/HealthComponent.sol";
+import { SpeciesComponent, SpeciesComponentTableId } from "./tables/SpeciesComponent.sol";
 import { DamageComponent, DamageComponentTableId } from "./tables/DamageComponent.sol";
 import { TileComponent, TileComponentTableId } from "./tables/TileComponent.sol";

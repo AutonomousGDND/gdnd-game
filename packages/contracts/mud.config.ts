@@ -4,6 +4,7 @@ export default mudConfig({
   enums: {
     TileType: ["Fog", "Ground", "Wall", "Door"],
     Direction: ["Up", "Left", "Right", "Down"],
+    Species: ["Sprite", "Goblin", "Dwarf", "Dragon", "Human"]
   },
   tables: {
     PositionComponent: {
@@ -22,6 +23,7 @@ export default mudConfig({
         max: "uint16",
       },
     },
+    SpeciesComponent: "Species",
     DamageComponent: "uint16",
     TileComponent: {
       keySchema: {

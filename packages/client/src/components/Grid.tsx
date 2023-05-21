@@ -21,6 +21,10 @@ const TILE_SIZE = 55;
 const Tile = ({ tile }: { tile: TileProps }) => {
     return (
         <Sprite
+            pointerdown={() => {
+                console.log(tile);
+            }}
+            interactive
             image={tileImages[tile.type]}
             position={[tile.x * TILE_SIZE, tile.y * TILE_SIZE]}
             scale={{ x: 0.1, y: 0.1 }}
