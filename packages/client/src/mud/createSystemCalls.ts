@@ -1,14 +1,9 @@
 import { SetupNetworkResult } from "./setupNetwork";
+import { Direction } from "./types";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 // move this somewhere eventually
-export enum Direction {
-    Up,
-    Left,
-    Right,
-    Down,
-}
 
 export function createSystemCalls({ worldSend }: SetupNetworkResult) {
     const addRandomTile = async (x: number, y: number) => {

@@ -1,7 +1,7 @@
 import { Sprite, Container } from "@pixi/react";
 import arrow from "../arrow.jpg";
 import { useMUD } from "../MUDContext";
-import { Direction } from "../mud/createSystemCalls";
+import { Direction } from "../mud/types";
 
 const SCALE = { x: 0.25, y: 0.25 };
 const ANCHOR = 0;

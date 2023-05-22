@@ -23,8 +23,11 @@ import { TileType } from "../codegen/Types.sol";
 import { addressToEntity } from "../Utils.sol";
 import { Direction, CharacterSpecies } from "../codegen/Types.sol";
 
+import "forge-std/console.sol";
+
 contract CharacterSystem is System {
     function spawn(int16 x, int16 y) public {
+        console.log("Spawn !!!!");
         TileType destinationTile = Tile.get(x, y, uint32(0));
         require(destinationTile == TileType.Ground, "Can only spawn on the ground");
         bytes32 player = addressToEntity(_msgSender());
@@ -45,10 +48,11 @@ contract CharacterSystem is System {
     }
 
     function move(Direction direction) public {
+        console.log("Move %d", uint8(direction));
         bytes32 player = addressToEntity(_msgSender());
 
         uint8 exhaustion = Exhaustion.get(player);
-        require(exhaustion < 100, "Character is exhausted");
+//        require(exhaustion < 100, "Character is exhausted");
         PositionData memory existingPosition = Position.get(player);
         int16 x = existingPosition.x;
         int16 y = existingPosition.y;
@@ -63,8 +67,6 @@ contract CharacterSystem is System {
             x += 1;
         }
 
-        bytes32[] memory playersAtPosition = getKeysWithValue(PositionTableId, Position.encode(x, y, 0));
-
-        Position.set(player, x, y, 0);
+        Position.set(player, x, y, existingPosition.z);
     }
 }

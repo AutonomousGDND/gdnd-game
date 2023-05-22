@@ -4,11 +4,8 @@ import { Viewport } from "./PixiViewport";
 import tileImage from "../tile.jpg";
 import NewDungeon from "random-dungeon-generator";
 import { useEffect, useState } from "react";
-import { useEntityQuery } from "@latticexyz/react";
 import { useMUD } from "../MUDContext";
-import { Has, getComponentValueStrict } from "@latticexyz/recs";
-import { BigNumber } from "ethers";
-import TileType from "../types/TileType";
+import { TileType } from "../mud/types";
 import { useSocket } from "../contexts/socket";
 import wall from "../wall.png";
 import ground from "../ground.png";
@@ -49,7 +46,7 @@ export const Grid = () => {
     const app = useApp();
     const {
         components: { Tile },
-        systemCalls: { addRandomTile },
+        systemCalls: { addRandomTile, spawnPlayer, move },
     } = useMUD();
     // const tileIds = useEntityQuery([Has(Tile)]);
     const tileIds = [];
@@ -79,6 +76,8 @@ export const Grid = () => {
             }
         }
         setTiles(_tiles);
+        window.spawnPlayer = spawnPlayer;
+        window.move = move;
     }, [app]);
 
     return (
