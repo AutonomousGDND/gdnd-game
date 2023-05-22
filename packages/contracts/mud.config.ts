@@ -39,10 +39,6 @@ export default mudConfig({
     },
   },
   systems: {
-    MoveSystem: {
-      name: "Move",
-      openAccess: true,
-    },
     PickUpSystem: {
       name: "PickUp",
       openAccess: true,
@@ -51,5 +47,9 @@ export default mudConfig({
       name: "Explore",
       openAccess: true,
     },
+    CharacterSystem: {
+      name: 'Character',
+      openAccess: true
+    }
   },
 });

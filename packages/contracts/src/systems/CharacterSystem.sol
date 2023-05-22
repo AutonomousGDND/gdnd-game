@@ -6,12 +6,15 @@ import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/ge
 import {
     Position,
     PositionTableId,
+    PositionData,
     Health,
     HealthData,
     Damage,
     Tile,
     Greed,
     Exhaustion,
+    Hunger,
+    Species,
     Armor,
     Damage
 } from "../codegen/Tables.sol";
@@ -21,15 +24,15 @@ import { addressToEntity } from "../Utils.sol";
 import { Direction, CharacterSpecies } from "../codegen/Types.sol";
 
 contract CharacterSystem is System {
-    function spawn(int32 x, int32 y) public {
-        TileType destinationTile = Tile.get(x, y);
+    function spawn(int16 x, int16 y) public {
+        TileType destinationTile = Tile.get(x, y, uint32(0));
         require(destinationTile == TileType.Ground, "Can only spawn on the ground");
         bytes32 player = addressToEntity(_msgSender());
 
-        HealthData playerHealth = Health.get(player);
-        require(playerHealth == 0, "Player cannot spawn");
+        HealthData memory playerHealth = Health.get(player);
+        require(playerHealth.current == 0, "Player cannot spawn");
 
-        Position.set(player, x, y);
+        Position.set(player, x, y, 0);
         Health.set(player, HealthData({
             current: 100,
             max: 100
@@ -47,8 +50,8 @@ contract CharacterSystem is System {
         uint8 exhaustion = Exhaustion.get(player);
         require(exhaustion < 100, "Character is exhausted");
         PositionData memory existingPosition = Position.get(player);
-        int8 x = existingPosition.x;
-        int8 y = existingPosition.y;
+        int16 x = existingPosition.x;
+        int16 y = existingPosition.y;
 
         if (direction == Direction.Up) {
             y -= 1;
@@ -60,8 +63,8 @@ contract CharacterSystem is System {
             x += 1;
         }
 
-        bytes32[] memory playersAtPosition = getKeysWithValue(PositionTableId, Position.encode(x, y));
+        bytes32[] memory playersAtPosition = getKeysWithValue(PositionTableId, Position.encode(x, y, 0));
 
-        Position.set(player, x, y);
+        Position.set(player, x, y, 0);
     }
 }

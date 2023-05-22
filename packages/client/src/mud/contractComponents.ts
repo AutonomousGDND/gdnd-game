@@ -98,22 +98,6 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    Stamina: (() => {
-      const tableId = new TableId("", "Stamina");
-      return defineComponent(
-        world,
-        {
-          current: RecsType.Number,
-          max: RecsType.Number,
-        },
-        {
-          metadata: {
-            contractId: tableId.toHexString(),
-            tableId: tableId.toString(),
-          },
-        }
-      );
-    })(),
     Species: (() => {
       const tableId = new TableId("", "Species");
       return defineComponent(

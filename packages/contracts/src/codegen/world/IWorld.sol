@@ -7,13 +7,12 @@ import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
 
 import { ICharacterSystem } from "./ICharacterSystem.sol";
 import { IExploreSystem } from "./IExploreSystem.sol";
-import { IMoveSystem } from "./IMoveSystem.sol";
 import { IPickUpSystem } from "./IPickUpSystem.sol";
 
 /**
  * The IWorld interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface IWorld is IBaseWorld, ICharacterSystem, IExploreSystem, IMoveSystem, IPickUpSystem {
+interface IWorld is IBaseWorld, ICharacterSystem, IExploreSystem, IPickUpSystem {
 
 }

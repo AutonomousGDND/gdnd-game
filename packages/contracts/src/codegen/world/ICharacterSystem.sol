@@ -6,7 +6,7 @@ pragma solidity >=0.8.0;
 import { Direction } from "./../Types.sol";
 
 interface ICharacterSystem {
-  function spawn(int32 x, int32 y) external;
+  function spawn(int16 x, int16 y) external;
 
   function move(Direction direction) external;
 }

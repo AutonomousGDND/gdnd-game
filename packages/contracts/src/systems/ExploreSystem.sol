@@ -19,10 +19,10 @@ contract ExploreSystem is System {
 
     function addRandomTile(int8 x, int8 y) public {
         TileType tile = _getRandomTile();
-        TileType exstisting = Tile.get(x, y);
+        TileType exstisting = Tile.get(x, y, uint32(0));
         if (exstisting != TileType.Fog) {
             revert();
         }
-        Tile.set(x, y, tile);
+        Tile.set(x, y, uint32(0), tile);
     }
 }

@@ -9,7 +9,6 @@ import { Hunger, HungerTableId } from "./tables/Hunger.sol";
 import { Bravery, BraveryTableId } from "./tables/Bravery.sol";
 import { Exhaustion, ExhaustionTableId } from "./tables/Exhaustion.sol";
 import { Health, HealthData, HealthTableId } from "./tables/Health.sol";
-import { Stamina, StaminaData, StaminaTableId } from "./tables/Stamina.sol";
 import { Species, SpeciesTableId } from "./tables/Species.sol";
 import { Damage, DamageTableId } from "./tables/Damage.sol";
 import { Armor, ArmorTableId } from "./tables/Armor.sol";
