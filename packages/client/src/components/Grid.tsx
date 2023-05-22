@@ -15,7 +15,7 @@ const tileImages: Record<TileType, string> = {
     [TileType.Ground]: tileImage,
     [TileType.Wall]: tileImage,
     [TileType.Door]: tileImage,
-    [TileType.LockedDoor]: tileImage
+    [TileType.LockedDoor]: tileImage,
 };
 
 const TILE_SIZE = 55;
@@ -46,7 +46,7 @@ export const Grid = () => {
     const app = useApp();
     const {
         components: { Tile },
-        systemCalls: { addRandomTile },
+        systemCalls: { addRandomTile, spawnPlayer },
     } = useMUD();
     const tileIds = useEntityQuery([Has(Tile)]);
 
@@ -54,6 +54,7 @@ export const Grid = () => {
         // we have to run `resize` on app load in order for it to automatically resize to the window w/h
         // if we didn't run this, the app wouldn't be full screen until we mantually resized our window
         app.resize();
+        // spawnPlayer(0, 0);
         window.addRandomTile = addRandomTile;
     }, [app]);
 
@@ -63,11 +64,7 @@ export const Grid = () => {
                 const [x, y] = entityId
                     .split(":")
                     .map((n) => BigNumber.from(n).toNumber());
-                console.log({ x, y });
-                const { tile } = getComponentValueStrict(
-                    Tile,
-                    entityId
-                );
+                const { tile } = getComponentValueStrict(Tile, entityId);
                 const tileData = {
                     x,
                     y,
