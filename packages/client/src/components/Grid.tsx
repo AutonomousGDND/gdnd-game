@@ -8,24 +8,24 @@ import { useMUD } from "../MUDContext";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
 import { BigNumber } from "ethers";
 import TileType from "../types/TileType";
-import { io } from 'socket.io-client';
-
-const socket = io('ws://localhost:5000');
+import { useSocket } from "../contexts/socket";
 
 const tileImages: Record<TileType, string> = {
-    [TileType.Fog]: '',
+    [TileType.Fog]: "",
     [TileType.Ground]: tileImage,
     [TileType.Wall]: tileImage,
     [TileType.Door]: tileImage,
-}
+};
 
 const TILE_SIZE = 55;
 // if this gets more complicated, we can export to it's own file. For now its fine.
 const Tile = ({ tile }: { tile: TileProps }) => {
+    const socket = useSocket();
     return (
         <Sprite
             pointerdown={() => {
-                socket.emit('add-tile', { x: tile.x + 1, y: tile.y });
+                console.log("socket", socket);
+                socket?.emit("add-tile", { x: tile.x + 1, y: tile.y + 1 });
             }}
             interactive
             image={tileImages[tile.type]}
@@ -59,17 +59,19 @@ export const Grid = () => {
     return (
         <Viewport width={window.innerWidth} height={window.innerHeight}>
             {tileIds.map((entityId) => {
-                const [x, y] = entityId.split(':').map(n => BigNumber.from(n).toNumber());
+                const [x, y] = entityId
+                    .split(":")
+                    .map((n) => BigNumber.from(n).toNumber());
                 console.log({ x, y });
                 const { tile } = getComponentValueStrict(
                     TileComponent,
-                    entityId,
+                    entityId
                 );
                 const tileData = {
                     x,
                     y,
-                    type: tile as TileType
-                }
+                    type: tile as TileType,
+                };
                 return <Tile key={entityId} tile={tileData} />;
             })}
         </Viewport>

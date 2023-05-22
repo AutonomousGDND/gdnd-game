@@ -1,5 +1,5 @@
 import { MUDContext } from "../MUDContext";
-import { SetupResult } from "../mud/setup";
+import { SocketContext, SocketProvider, useSocket } from "../contexts/socket";
 import { type Context, ReactNode } from "react";
 
 type ContextBridge = {
@@ -9,12 +9,13 @@ type ContextBridge = {
 };
 
 export const ContextBridge = ({ children, Context, render }: ContextBridge) => {
+    const socket = useSocket();
     return (
         <Context.Consumer>
             {(value) =>
                 render(
                     <Context.Provider value={value}>
-                        {children}
+                        <SocketProvider>{children}</SocketProvider>
                     </Context.Provider>
                 )
             }
