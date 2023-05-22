@@ -17,13 +17,10 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-// Import user types
-import { TileType } from "./../Types.sol";
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Bravery")));
+bytes32 constant BraveryTableId = _tableId;
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("TileComponent")));
-bytes32 constant TileComponentTableId = _tableId;
-
-library TileComponent {
+library Bravery {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -33,9 +30,8 @@ library TileComponent {
   }
 
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
-    _schema[0] = SchemaType.INT8;
-    _schema[1] = SchemaType.INT8;
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.BYTES32;
 
     return SchemaLib.encode(_schema);
   }
@@ -43,8 +39,8 @@ library TileComponent {
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
-    _fieldNames[0] = "tile";
-    return ("TileComponent", _fieldNames);
+    _fieldNames[0] = "value";
+    return ("Bravery", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -69,70 +65,63 @@ library TileComponent {
     _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get tile */
-  function get(int8 x, int8 y) internal view returns (TileType tile) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint8((x))));
-    _keyTuple[1] = bytes32(uint256(uint8((y))));
+  /** Get value */
+  function get(bytes32 key) internal view returns (uint8 value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
-    return TileType(uint8(Bytes.slice1(_blob, 0)));
+    return (uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Get tile (using the specified store) */
-  function get(IStore _store, int8 x, int8 y) internal view returns (TileType tile) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint8((x))));
-    _keyTuple[1] = bytes32(uint256(uint8((y))));
+  /** Get value (using the specified store) */
+  function get(IStore _store, bytes32 key) internal view returns (uint8 value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
-    return TileType(uint8(Bytes.slice1(_blob, 0)));
+    return (uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Set tile */
-  function set(int8 x, int8 y, TileType tile) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint8((x))));
-    _keyTuple[1] = bytes32(uint256(uint8((y))));
+  /** Set value */
+  function set(bytes32 key, uint8 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(tile)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
   }
 
-  /** Set tile (using the specified store) */
-  function set(IStore _store, int8 x, int8 y, TileType tile) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint8((x))));
-    _keyTuple[1] = bytes32(uint256(uint8((y))));
+  /** Set value (using the specified store) */
+  function set(IStore _store, bytes32 key, uint8 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(tile)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(TileType tile) internal view returns (bytes memory) {
-    return abi.encodePacked(tile);
+  function encode(uint8 value) internal view returns (bytes memory) {
+    return abi.encodePacked(value);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(int8 x, int8 y) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint8((x))));
-    _keyTuple[1] = bytes32(uint256(uint8((y))));
+  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _keyTuple) {
+    _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(int8 x, int8 y) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint8((x))));
-    _keyTuple[1] = bytes32(uint256(uint8((y))));
+  function deleteRecord(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, int8 x, int8 y) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint8((x))));
-    _keyTuple[1] = bytes32(uint256(uint8((y))));
+  function deleteRecord(IStore _store, bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

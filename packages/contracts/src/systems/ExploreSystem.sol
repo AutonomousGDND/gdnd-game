@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { TileComponent } from "../codegen/Tables.sol";
+import { Tile } from "../codegen/Tables.sol";
 import { TileType } from "../codegen/Types.sol";
 
 /**
@@ -19,10 +19,10 @@ contract ExploreSystem is System {
 
     function addRandomTile(int8 x, int8 y) public {
         TileType tile = _getRandomTile();
-        TileType exstisting = TileComponent.get(x, y);
+        TileType exstisting = Tile.get(x, y);
         if (exstisting != TileType.Fog) {
             revert();
         }
-        TileComponent.set(x, y, tile);
+        Tile.set(x, y, tile);
     }
 }

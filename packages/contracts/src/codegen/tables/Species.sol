@@ -17,10 +17,13 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("HungerComponent")));
-bytes32 constant HungerComponentTableId = _tableId;
+// Import user types
+import { CharacterSpecies } from "./../Types.sol";
 
-library HungerComponent {
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Species")));
+bytes32 constant SpeciesTableId = _tableId;
+
+library Species {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -40,7 +43,7 @@ library HungerComponent {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "value";
-    return ("HungerComponent", _fieldNames);
+    return ("Species", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -66,41 +69,41 @@ library HungerComponent {
   }
 
   /** Get value */
-  function get(bytes32 key) internal view returns (uint8 value) {
+  function get(bytes32 key) internal view returns (CharacterSpecies value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
-    return (uint8(Bytes.slice1(_blob, 0)));
+    return CharacterSpecies(uint8(Bytes.slice1(_blob, 0)));
   }
 
   /** Get value (using the specified store) */
-  function get(IStore _store, bytes32 key) internal view returns (uint8 value) {
+  function get(IStore _store, bytes32 key) internal view returns (CharacterSpecies value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
-    return (uint8(Bytes.slice1(_blob, 0)));
+    return CharacterSpecies(uint8(Bytes.slice1(_blob, 0)));
   }
 
   /** Set value */
-  function set(bytes32 key, uint8 value) internal {
+  function set(bytes32 key, CharacterSpecies value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(value)));
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, bytes32 key, uint8 value) internal {
+  function set(IStore _store, bytes32 key, CharacterSpecies value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(value)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint8 value) internal view returns (bytes memory) {
+  function encode(CharacterSpecies value) internal view returns (bytes memory) {
     return abi.encodePacked(value);
   }
 

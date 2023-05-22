@@ -20,7 +20,7 @@ const tileImages: Record<TileType, string> = {
 
 const TILE_SIZE = 55;
 // if this gets more complicated, we can export to it's own file. For now its fine.
-const Tile = ({ tile }: { tile: TileProps }) => {
+const MapTile = ({ tile }: { tile: MapTileProps }) => {
     const socket = useSocket();
     return (
         <Sprite
@@ -36,7 +36,7 @@ const Tile = ({ tile }: { tile: TileProps }) => {
         />
     );
 };
-type TileProps = {
+type MapTileProps = {
     x: number;
     y: number;
     type: TileType;
@@ -45,10 +45,10 @@ type TileProps = {
 export const Grid = () => {
     const app = useApp();
     const {
-        components: { TileComponent },
+        components: { Tile },
         systemCalls: { addRandomTile },
     } = useMUD();
-    const tileIds = useEntityQuery([Has(TileComponent)]);
+    const tileIds = useEntityQuery([Has(Tile)]);
 
     useEffect(() => {
         // we have to run `resize` on app load in order for it to automatically resize to the window w/h
@@ -65,7 +65,7 @@ export const Grid = () => {
                     .map((n) => BigNumber.from(n).toNumber());
                 console.log({ x, y });
                 const { tile } = getComponentValueStrict(
-                    TileComponent,
+                    Tile,
                     entityId
                 );
                 const tileData = {
@@ -73,7 +73,7 @@ export const Grid = () => {
                     y,
                     type: tile as TileType,
                 };
-                return <Tile key={entityId} tile={tileData} />;
+                return <MapTile key={entityId} tile={tileData} />;
             })}
         </Viewport>
     );

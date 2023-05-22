@@ -4,31 +4,34 @@ export default mudConfig({
   enums: {
     TileType: ["Fog", "Ground", "Wall", "Door", "LockedDoor"],
     Direction: ["Up", "Left", "Right", "Down"],
-    Species: ["Sprite", "Goblin", "Dwarf", "Dragon", "Human"]
+    CharacterSpecies: ["Sprite", "Goblin", "Dwarf", "Dragon", "Human"]
   },
   tables: {
-    PositionComponent: {
+    Position: {
       schema: {
-        x: "int32",
-        y: "int32",
+        x: "int16",
+        y: "int16",
+        z: "uint32"
       },
     },
-    GreedComponent: "uint8",
-    HungerComponent: "uint8",
-    StaminaComponent: "uint8",
-    BraveryComponent: "uint8",
-    HealthComponent: {
+    Greed: "uint8",
+    Hunger: "uint8",
+    Bravery: "uint8",
+    Exhaustion: "uint8",
+    Health: {
       schema: {
         current: "uint16",
         max: "uint16",
       },
     },
-    SpeciesComponent: "Species",
-    DamageComponent: "uint16",
-    TileComponent: {
+    Species: "CharacterSpecies",
+    Damage: "uint16",
+    Armor: "uint16",
+    Tile: {
       keySchema: {
-        x: "int8",
-        y: "int8",
+        x: "int16",
+        y: "int16",
+        z: "uint32"
       },
       schema: {
         tile: "TileType",
@@ -49,11 +52,4 @@ export default mudConfig({
       openAccess: true,
     },
   },
-  modules: [
-    {
-      name: "UniqueEntityModule",
-      root: true,
-      args: [],
-    },
-  ],
 });

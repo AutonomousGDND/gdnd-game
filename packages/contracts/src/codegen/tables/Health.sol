@@ -17,20 +17,20 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("PositionComponen")));
-bytes32 constant PositionComponentTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Health")));
+bytes32 constant HealthTableId = _tableId;
 
-struct PositionComponentData {
-  int32 x;
-  int32 y;
+struct HealthData {
+  uint16 current;
+  uint16 max;
 }
 
-library PositionComponent {
+library Health {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
-    _schema[0] = SchemaType.INT32;
-    _schema[1] = SchemaType.INT32;
+    _schema[0] = SchemaType.UINT16;
+    _schema[1] = SchemaType.UINT16;
 
     return SchemaLib.encode(_schema);
   }
@@ -45,9 +45,9 @@ library PositionComponent {
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](2);
-    _fieldNames[0] = "x";
-    _fieldNames[1] = "y";
-    return ("PositionComponent", _fieldNames);
+    _fieldNames[0] = "current";
+    _fieldNames[1] = "max";
+    return ("Health", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -72,76 +72,76 @@ library PositionComponent {
     _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get x */
-  function getX(bytes32 key) internal view returns (int32 x) {
+  /** Get current */
+  function getCurrent(bytes32 key) internal view returns (uint16 current) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
-    return (int32(uint32(Bytes.slice4(_blob, 0))));
+    return (uint16(Bytes.slice2(_blob, 0)));
   }
 
-  /** Get x (using the specified store) */
-  function getX(IStore _store, bytes32 key) internal view returns (int32 x) {
+  /** Get current (using the specified store) */
+  function getCurrent(IStore _store, bytes32 key) internal view returns (uint16 current) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
-    return (int32(uint32(Bytes.slice4(_blob, 0))));
+    return (uint16(Bytes.slice2(_blob, 0)));
   }
 
-  /** Set x */
-  function setX(bytes32 key, int32 x) internal {
+  /** Set current */
+  function setCurrent(bytes32 key, uint16 current) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((x)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((current)));
   }
 
-  /** Set x (using the specified store) */
-  function setX(IStore _store, bytes32 key, int32 x) internal {
+  /** Set current (using the specified store) */
+  function setCurrent(IStore _store, bytes32 key, uint16 current) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((x)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((current)));
   }
 
-  /** Get y */
-  function getY(bytes32 key) internal view returns (int32 y) {
+  /** Get max */
+  function getMax(bytes32 key) internal view returns (uint16 max) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
-    return (int32(uint32(Bytes.slice4(_blob, 0))));
+    return (uint16(Bytes.slice2(_blob, 0)));
   }
 
-  /** Get y (using the specified store) */
-  function getY(IStore _store, bytes32 key) internal view returns (int32 y) {
+  /** Get max (using the specified store) */
+  function getMax(IStore _store, bytes32 key) internal view returns (uint16 max) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
-    return (int32(uint32(Bytes.slice4(_blob, 0))));
+    return (uint16(Bytes.slice2(_blob, 0)));
   }
 
-  /** Set y */
-  function setY(bytes32 key, int32 y) internal {
+  /** Set max */
+  function setMax(bytes32 key, uint16 max) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((y)));
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((max)));
   }
 
-  /** Set y (using the specified store) */
-  function setY(IStore _store, bytes32 key, int32 y) internal {
+  /** Set max (using the specified store) */
+  function setMax(IStore _store, bytes32 key, uint16 max) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((y)));
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((max)));
   }
 
   /** Get the full data */
-  function get(bytes32 key) internal view returns (PositionComponentData memory _table) {
+  function get(bytes32 key) internal view returns (HealthData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -150,7 +150,7 @@ library PositionComponent {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 key) internal view returns (PositionComponentData memory _table) {
+  function get(IStore _store, bytes32 key) internal view returns (HealthData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -159,8 +159,8 @@ library PositionComponent {
   }
 
   /** Set the full data using individual values */
-  function set(bytes32 key, int32 x, int32 y) internal {
-    bytes memory _data = encode(x, y);
+  function set(bytes32 key, uint16 current, uint16 max) internal {
+    bytes memory _data = encode(current, max);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
@@ -169,8 +169,8 @@ library PositionComponent {
   }
 
   /** Set the full data using individual values (using the specified store) */
-  function set(IStore _store, bytes32 key, int32 x, int32 y) internal {
-    bytes memory _data = encode(x, y);
+  function set(IStore _store, bytes32 key, uint16 current, uint16 max) internal {
+    bytes memory _data = encode(current, max);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
@@ -179,25 +179,25 @@ library PositionComponent {
   }
 
   /** Set the full data using the data struct */
-  function set(bytes32 key, PositionComponentData memory _table) internal {
-    set(key, _table.x, _table.y);
+  function set(bytes32 key, HealthData memory _table) internal {
+    set(key, _table.current, _table.max);
   }
 
   /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, bytes32 key, PositionComponentData memory _table) internal {
-    set(_store, key, _table.x, _table.y);
+  function set(IStore _store, bytes32 key, HealthData memory _table) internal {
+    set(_store, key, _table.current, _table.max);
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal pure returns (PositionComponentData memory _table) {
-    _table.x = (int32(uint32(Bytes.slice4(_blob, 0))));
+  function decode(bytes memory _blob) internal pure returns (HealthData memory _table) {
+    _table.current = (uint16(Bytes.slice2(_blob, 0)));
 
-    _table.y = (int32(uint32(Bytes.slice4(_blob, 4))));
+    _table.max = (uint16(Bytes.slice2(_blob, 2)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(int32 x, int32 y) internal view returns (bytes memory) {
-    return abi.encodePacked(x, y);
+  function encode(uint16 current, uint16 max) internal view returns (bytes memory) {
+    return abi.encodePacked(current, max);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

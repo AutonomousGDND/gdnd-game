@@ -5,13 +5,14 @@ import { defineComponent, Type as RecsType, World } from "@latticexyz/recs";
 
 export function defineContractComponents(world: World) {
   return {
-    PositionComponent: (() => {
-      const tableId = new TableId("", "PositionComponen");
+    Position: (() => {
+      const tableId = new TableId("", "Position");
       return defineComponent(
         world,
         {
           x: RecsType.Number,
           y: RecsType.Number,
+          z: RecsType.Number,
         },
         {
           metadata: {
@@ -21,8 +22,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    GreedComponent: (() => {
-      const tableId = new TableId("", "GreedComponent");
+    Greed: (() => {
+      const tableId = new TableId("", "Greed");
       return defineComponent(
         world,
         {
@@ -36,8 +37,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    HungerComponent: (() => {
-      const tableId = new TableId("", "HungerComponent");
+    Hunger: (() => {
+      const tableId = new TableId("", "Hunger");
       return defineComponent(
         world,
         {
@@ -51,8 +52,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    StaminaComponent: (() => {
-      const tableId = new TableId("", "StaminaComponent");
+    Bravery: (() => {
+      const tableId = new TableId("", "Bravery");
       return defineComponent(
         world,
         {
@@ -66,8 +67,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    BraveryComponent: (() => {
-      const tableId = new TableId("", "BraveryComponent");
+    Exhaustion: (() => {
+      const tableId = new TableId("", "Exhaustion");
       return defineComponent(
         world,
         {
@@ -81,8 +82,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    HealthComponent: (() => {
-      const tableId = new TableId("", "HealthComponent");
+    Health: (() => {
+      const tableId = new TableId("", "Health");
       return defineComponent(
         world,
         {
@@ -97,8 +98,24 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    SpeciesComponent: (() => {
-      const tableId = new TableId("", "SpeciesComponent");
+    Stamina: (() => {
+      const tableId = new TableId("", "Stamina");
+      return defineComponent(
+        world,
+        {
+          current: RecsType.Number,
+          max: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    Species: (() => {
+      const tableId = new TableId("", "Species");
       return defineComponent(
         world,
         {
@@ -112,8 +129,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    DamageComponent: (() => {
-      const tableId = new TableId("", "DamageComponent");
+    Damage: (() => {
+      const tableId = new TableId("", "Damage");
       return defineComponent(
         world,
         {
@@ -127,8 +144,23 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    TileComponent: (() => {
-      const tableId = new TableId("", "TileComponent");
+    Armor: (() => {
+      const tableId = new TableId("", "Armor");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    Tile: (() => {
+      const tableId = new TableId("", "Tile");
       return defineComponent(
         world,
         {

@@ -17,7 +17,7 @@ enum Direction {
   Down
 }
 
-enum Species {
+enum CharacterSpecies {
   Sprite,
   Goblin,
   Dwarf,

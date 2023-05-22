@@ -17,15 +17,15 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("HealthComponent")));
-bytes32 constant HealthComponentTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Stamina")));
+bytes32 constant StaminaTableId = _tableId;
 
-struct HealthComponentData {
+struct StaminaData {
   uint16 current;
   uint16 max;
 }
 
-library HealthComponent {
+library Stamina {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
@@ -47,7 +47,7 @@ library HealthComponent {
     string[] memory _fieldNames = new string[](2);
     _fieldNames[0] = "current";
     _fieldNames[1] = "max";
-    return ("HealthComponent", _fieldNames);
+    return ("Stamina", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -141,7 +141,7 @@ library HealthComponent {
   }
 
   /** Get the full data */
-  function get(bytes32 key) internal view returns (HealthComponentData memory _table) {
+  function get(bytes32 key) internal view returns (StaminaData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -150,7 +150,7 @@ library HealthComponent {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 key) internal view returns (HealthComponentData memory _table) {
+  function get(IStore _store, bytes32 key) internal view returns (StaminaData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((key));
 
@@ -179,17 +179,17 @@ library HealthComponent {
   }
 
   /** Set the full data using the data struct */
-  function set(bytes32 key, HealthComponentData memory _table) internal {
+  function set(bytes32 key, StaminaData memory _table) internal {
     set(key, _table.current, _table.max);
   }
 
   /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, bytes32 key, HealthComponentData memory _table) internal {
+  function set(IStore _store, bytes32 key, StaminaData memory _table) internal {
     set(_store, key, _table.current, _table.max);
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal pure returns (HealthComponentData memory _table) {
+  function decode(bytes memory _blob) internal pure returns (StaminaData memory _table) {
     _table.current = (uint16(Bytes.slice2(_blob, 0)));
 
     _table.max = (uint16(Bytes.slice2(_blob, 2)));
