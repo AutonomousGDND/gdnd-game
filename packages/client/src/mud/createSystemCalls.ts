@@ -20,7 +20,6 @@ export function createSystemCalls({ worldSend }: SetupNetworkResult) {
     };
 
     const move = async (direction: Direction) => {
-        console.log("moving", direction);
         worldSend("move", [direction]);
     };
 

@@ -26,12 +26,15 @@
     "@pixi/react": "^7.1.0",
     "@wagmi/chains": "^0.2.22",
     "contracts": "workspace:*",
+    "dungeon-generator": "^0.0.1",
     "ethers": "^5.7.2",
     "pixi-viewport": "^5.0.1",
     "pixi.js": "^7.2.4",
+    "random-dungeon-generator": "^1.0.32",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "socket.io-client": "^4.6.1"
+    "socket.io-client": "^4.6.1",
+    "wavefunctioncollapse": "^2.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.6",
