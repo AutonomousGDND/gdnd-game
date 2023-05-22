@@ -2,7 +2,8 @@ enum TileType {
     Fog,
     Ground,
     Wall,
-    Door
+    Door,
+    LockedDoor
 }
 
 export default TileType;

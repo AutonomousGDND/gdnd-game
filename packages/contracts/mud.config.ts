@@ -2,7 +2,7 @@ import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   enums: {
-    TileType: ["Fog", "Ground", "Wall", "Door"],
+    TileType: ["Fog", "Ground", "Wall", "Door", "LockedDoor"],
     Direction: ["Up", "Left", "Right", "Down"],
     Species: ["Sprite", "Goblin", "Dwarf", "Dragon", "Human"]
   },

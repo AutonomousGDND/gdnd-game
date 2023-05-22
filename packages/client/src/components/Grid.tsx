@@ -15,6 +15,7 @@ const tileImages: Record<TileType, string> = {
     [TileType.Ground]: tileImage,
     [TileType.Wall]: tileImage,
     [TileType.Door]: tileImage,
+    [TileType.LockedDoor]: tileImage
 };
 
 const TILE_SIZE = 55;

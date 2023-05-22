@@ -6,7 +6,8 @@ enum TileType {
   Fog,
   Ground,
   Wall,
-  Door
+  Door,
+  LockedDoor
 }
 
 enum Direction {
