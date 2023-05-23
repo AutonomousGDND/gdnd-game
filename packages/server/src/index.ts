@@ -8,9 +8,19 @@ import Jimp from "jimp";
 import { SimpleTiledModel } from "./lib/wfc";
 import { tileData } from "./lib/simple-tiled-model-data";
 
-if (!process.env.PRIVATE_KEY || !process.env.PORT || !process.env.CHAIN_ID) {
+let nonce = 0;
+
+if (!process.env.FAUCET_KEY|| !process.env.PORT  || !process.env.DUNGEON_MASTER_KEY || !process.env.CHAIN_ID) {
     throw new Error("Missing environment variables");
 }
+const PORT = parseInt(process.env.PORT);
+const io = new Server(PORT, {
+    cors: {
+        origin: "*",
+    },
+});
+
+const FIELD_OF_VIEW = 2;
 
 const worlds = worldsJson as Partial<
     Record<string, { address: string; blockNumber?: number }>
@@ -19,20 +29,16 @@ const WorldAbi = IWorld__factory.abi;
 
 const CHAIN_ID = process.env.CHAIN_ID;
 const RPC = process.env.ETH_RPC;
-const PORT = parseInt(process.env.PORT);
-const io = new Server(PORT, {
-    cors: {
-        origin: "*",
-    },
-});
 
 const world = worlds[CHAIN_ID];
 if (!world) {
     throw new Error("World not found");
 }
 const provider = new ethers.providers.JsonRpcProvider(RPC);
-const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+const signer = new ethers.Wallet(process.env.DUNGEON_MASTER_KEY, provider);
 const contract = new ethers.Contract(world.address, WorldAbi, signer);
+
+const faucet = new ethers.Wallet(process.env.FAUCET_KEY, provider);
 
 async function addTiles(
     x: number[],
@@ -40,7 +46,7 @@ async function addTiles(
     tileType: number[]
 ): Promise<ContractReceipt | null> {
     try {
-        const tx = await contract.addTiles(x, y, 1, tileType);
+        const tx = await contract.addTiles(x, y, 1, tileType, { nonce: nonce++ });
         return tx.wait();
     } catch (err) {
         console.log("err", err);
@@ -49,20 +55,18 @@ async function addTiles(
 }
 
 const discover = async (model: SimpleTiledModel, pixels: number[], mytiles: Record<string, boolean>, x: number, y: number) => {
-    console.log('Discover', x, y);
     if (!model.wave) {
         model.initialize()
     }
     if (!model.wave) {
         return;
     }
-    console.log('we made it');
     const before = model.wave.filter(
         possibilities => possibilities.filter(Boolean).length === 1
     ).map(cell => model.wave?.indexOf(cell));
 
-    for (let i = x - 1; i <= x + 1; i++) {
-        for (let j = y - 1; j <= y + 1; j++) {
+    for (let i = x - FIELD_OF_VIEW; i <= x + FIELD_OF_VIEW; i++) {
+        for (let j = y - FIELD_OF_VIEW; j <= y + FIELD_OF_VIEW; j++) {
             model.walk(i, j);
         }
     }
@@ -73,7 +77,6 @@ const discover = async (model: SimpleTiledModel, pixels: number[], mytiles: Reco
         possibilities => possibilities.filter(Boolean).length === 1
     ).map(cell => model.wave?.indexOf(cell));
 
-    console.log({ before, after });
     const needsAdd = after.filter(t => before.indexOf(t) === -1);
 
     const xes = [];
@@ -108,12 +111,22 @@ const discover = async (model: SimpleTiledModel, pixels: number[], mytiles: Reco
             types.push(tileType[i]);
         }
     }
-    console.log('AddTiles', { xes, ys, types });
+    console.log('AddTiles', types);
     const receipt = await addTiles(xes, ys, types);
-    console.log('AddTiles Receipt', receipt);
 }
 
+const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
 async function main(): Promise<void> {
+    nonce = await provider.getTransactionCount(signer.address);
+    io.on('connection', (socket) => {
+        console.log('Socket connected', socket.id);
+    });
+    await delay(2000);
+    await faucet.sendTransaction({
+        to: signer.address,
+        value: ethers.utils.parseEther('10')
+    });
+    console.log('Dungeon Master ready');
     for (const tile of tileData.tiles) {
         const image = await Jimp.read(`src/models/${tile.name}.png`);
         if (tile.symmetry === "X") {
@@ -161,47 +174,47 @@ main().catch((e) => {
 // representation of 3x3 wave collapse tiles
 const tileMaps = [
     // bend
-    [1, 0, 0, 1, 0, 0, 1, 1, 1],
-    [1, 1, 1, 1, 0, 0, 1, 0, 0],
-    [1, 1, 1, 0, 0, 1, 0, 0, 1],
-    [0, 0, 1, 0, 0, 1, 1, 1, 1],
+    [1, 2, 2, 1, 2, 2, 1, 1, 1],
+    [1, 1, 1, 1, 2, 2, 1, 2, 2],
+    [1, 1, 1, 2, 2, 1, 2, 2, 1],
+    [2, 2, 1, 2, 2, 1, 1, 1, 1],
     // corner
-    [0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 2, 1, 2, 2, 2, 2, 2, 2],
+    [2, 2, 2, 2, 2, 2, 2, 2, 1],
+    [2, 2, 2, 2, 2, 2, 1, 2, 2],
+    [1, 2, 2, 2, 2, 2, 2, 2, 2],
 
     // coridor
-    [0, 1, 0, 0, 1, 0, 0, 1, 0],
-    [0, 0, 0, 1, 1, 1, 0, 1, 0],
+    [2, 1, 2, 2, 1, 2, 2, 1, 2],
+    [2, 2, 2, 1, 1, 1, 2, 1, 2],
 
     // T
-    [1, 1, 1, 0, 1, 0, 0, 1, 0],
-    [0, 0, 1, 1, 1, 1, 0, 0, 1],
-    [0, 1, 0, 0, 1, 0, 1, 1, 1],
-    [1, 0, 0, 1, 1, 1, 1, 0, 0],
+    [1, 1, 1, 2, 1, 2, 2, 1, 2],
+    [2, 2, 1, 1, 1, 1, 2, 2, 1],
+    [2, 1, 2, 2, 1, 2, 1, 1, 1],
+    [1, 2, 2, 1, 1, 1, 1, 2, 2],
 
     // CUBE
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
 
     // floor
-    [0, 0, 0, 0, 0, 0, 1, 1, 1],
-    [1, 0, 0, 1, 0, 0, 1, 0, 0],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 0, 0, 1, 0, 0, 1],
+    [2, 2, 2, 2, 2, 2, 1, 1, 1],
+    [1, 2, 2, 1, 2, 2, 1, 2, 2],
+    [1, 1, 1, 2, 2, 2, 2, 2, 2],
+    [2, 2, 1, 2, 2, 1, 2, 2, 1],
 
     // small t
-    [0, 0, 0, 1, 1, 1, 0, 1, 0],
-    [0, 1, 0, 1, 1, 0, 0, 1, 0],
-    [0, 1, 0, 1, 1, 1, 0, 0, 0],
-    [0, 1, 0, 0, 1, 1, 0, 1, 0],
+    [2, 2, 2, 1, 1, 1, 2, 1, 2],
+    [2, 1, 2, 1, 1, 2, 2, 1, 2],
+    [2, 1, 2, 1, 1, 1, 2, 2, 2],
+    [2, 1, 2, 2, 1, 1, 2, 1, 2],
 
     // turn
-    [0, 1, 0, 0, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 0, 1, 0],
-    [0, 0, 0, 1, 1, 0, 0, 1, 0],
-    [0, 1, 0, 1, 1, 0, 0, 0, 0],
+    [2, 1, 2, 2, 1, 1, 2, 2, 2],
+    [2, 2, 2, 2, 1, 1, 2, 1, 2],
+    [2, 2, 2, 1, 1, 2, 2, 1, 2],
+    [2, 1, 2, 1, 1, 2, 2, 2, 2],
 
     // the void
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 2, 2, 2, 2, 2, 2, 2, 2],
 ];

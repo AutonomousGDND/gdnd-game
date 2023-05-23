@@ -1,5 +1,5 @@
 import "@pixi/events";
-import { Sprite, useApp } from "@pixi/react";
+import { Sprite, useApp} from "@pixi/react";
 import { Viewport } from "./PixiViewport";
 import { useEffect } from "react";
 import { useEntityQuery } from "@latticexyz/react";
@@ -10,9 +10,9 @@ import {
 } from "@latticexyz/recs";
 import { BigNumber } from "ethers";
 import { useSocket } from "../contexts/socket";
-import playerImage from "../player.gif";
-import wall from "../wall.png";
-import ground from "../ground.png";
+import wall from "../assets/wall.png";
+import ground from "../assets/ground.png";
+import playerImage from "../assets/player.png";
 
 const TILE_SIZE = 16;
 // if this gets more complicated, we can export to it's own file. For now its fine.
@@ -28,7 +28,7 @@ const MapTile = ({ tile }: { tile: MapTileProps }) => {
             image={tile.backgroundImage}
             position={[tile.x * TILE_SIZE, tile.y * TILE_SIZE]}
             scale={{ x: 1, y: 1 }}
-            roundPixels={true}
+            roundPixels={false}
         />
     );
 };
@@ -40,6 +40,7 @@ const PlayerSprite = ({ x, y }: { x: number; y: number }) => {
             scale={{ x: 1, y: 1 }}
             position={[x * TILE_SIZE, y * TILE_SIZE]}
         />
+
     );
 };
 
