@@ -14,7 +14,7 @@ contract PostDeploy is Script {
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
 
-    IWorld(worldAddress).addTile(0, 0, 0, TileType.Ground);
+    IWorld(worldAddress).addTile(25, 25, 1, TileType.Ground);
 
     // ------------------ EXAMPLES ------------------
 

@@ -34,13 +34,13 @@ const provider = new ethers.providers.JsonRpcProvider(RPC);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contract = new ethers.Contract(world.address, WorldAbi, signer);
 
-async function addTile(
-    x: number,
-    y: number,
-    tileType: number
+async function addTiles(
+    x: number[],
+    y: number[],
+    tileType: number[]
 ): Promise<ContractReceipt | null> {
     try {
-        const tx = await contract.addTile(x, y, 1, tileType);
+        const tx = await contract.addTiles(x, y, 1, tileType);
         return tx.wait();
     } catch (err) {
         console.log("err", err);
@@ -48,9 +48,72 @@ async function addTile(
     }
 }
 
-const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const discover = async (model: SimpleTiledModel, pixels: number[], mytiles: Record<string, boolean>, x: number, y: number) => {
+    console.log('Discover', x, y);
+    if (!model.wave) {
+        model.initialize()
+    }
+    if (!model.wave) {
+        return;
+    }
+    console.log('we made it');
+    const before = model.wave.filter(
+        possibilities => possibilities.filter(Boolean).length === 1
+    ).map(cell => model.wave?.indexOf(cell));
 
-async function main() {
+    for (let i = x - 1; i <= x + 1; i++) {
+        for (let j = y - 1; j <= y + 1; j++) {
+            model.walk(i, j);
+        }
+    }
+
+    model.graphics(pixels);
+
+    const after = model.wave.filter(
+        possibilities => possibilities.filter(Boolean).length === 1
+    ).map(cell => model.wave?.indexOf(cell));
+
+    console.log({ before, after });
+    const needsAdd = after.filter(t => before.indexOf(t) === -1);
+
+    const xes = [];
+    const ys = [];
+    const types = [];
+    for (let index = 0; index < model.wave.length; index++) {
+        if (model.wave[index].filter(Boolean).length !== 1) {
+            continue;
+        }
+        const tileType = tileMaps[model.wave[index].indexOf(true)];
+        for (let i = 0; i < tileType.length; i++) {
+            const x = index % model.FMX;
+            const y = Math.floor(index / model.FMX);
+            if (!mytiles[`${x}-${y}`]) {
+                xes.push(x);
+                ys.push(y);
+                types.push(tileType[i]);
+                mytiles[`${x}-${y}`] = true;
+            }
+        }
+    }
+    for (const index of needsAdd) {
+        if (!index) continue;
+        const x = index % model.FMX;
+        const y = Math.floor(index / model.FMX);
+        const tileType = tileMaps[model.wave[index].indexOf(true)];
+        for (let i = 0; i < tileType.length; i++) {
+            const x = index % model.FMX;
+            const y = Math.floor(index / model.FMX);
+            xes.push(x);
+            ys.push(y);
+            types.push(tileType[i]);
+        }
+    }
+    console.log('AddTiles', { xes, ys, types });
+    const receipt = await addTiles(xes, ys, types);
+    console.log('AddTiles Receipt', receipt);
+}
+
+async function main(): Promise<void> {
     for (const tile of tileData.tiles) {
         const image = await Jimp.read(`src/models/${tile.name}.png`);
         if (tile.symmetry === "X") {
@@ -69,40 +132,25 @@ async function main() {
     const model = new SimpleTiledModel(tileData, null, width, height, 0);
     let x = 0;
     let y = 0;
-    io.on("connection", (socket) => {
-        console.log(`Socket connected ${socket.id}`);
-        socket.on("add-tile", async ({ x, y }) => {
-            addTile(x, y, 1);
-        });
-    });
     const pixels = Array(width * height * 36).fill(0);
     const mytiles: Record<string, boolean> = {};
-    while (x * y < 100) {
-        await delay(1000);
-        model.walk(x, y);
-        model.graphics(pixels);
-
-        const waves: Array<boolean[]> = model.wave || [];
-        for (let index = 0; index < waves.length; index++) {
-            if (waves[index].filter(Boolean).length !== 1) {
-                continue;
-            }
-            const tileType = tileMaps[waves[index].findIndex(Boolean)];
-            for (let i = 0; i < tileType.length; i++) {
-                const x = index % width;
-                const y = Math.floor(index / width);
-                if (!mytiles[`${x}-${y}`]) {
-                    const receipt = await addTile(x, y, tileType[i]);
-                    mytiles[`${x}-${y}`] = true;
-                }
-            }
-        }
-        if (Math.random() < 0.5) {
-            x++;
-        } else {
-            y++;
-        }
-    }
+    contract.on('StoreSetRecord', async (table, key, data) => {
+        if (table !== '0x00000000000000000000000000000000506f736974696f6e0000000000000000') return;
+        const bytes2Array = data.replace(/^0x/, '').match(/(.{4})/g);
+        const x = parseInt(bytes2Array.shift(), 16);
+        const y = parseInt(bytes2Array.shift(), 16);
+        // const z = parseInt(bytes2Array.join(''), 16);
+        await discover(model, pixels, mytiles, x, y);
+    });
+    // while (x * y < 100) {
+    //     await delay(1000);
+    //     await discover(model, pixels, mytiles, x, y);
+    //     if (Math.random() < 0.5) {
+    //         x++;
+    //     } else {
+    //         y++;
+    //     }
+    // }
 }
 
 main().catch((e) => {

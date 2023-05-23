@@ -23,18 +23,16 @@ import { TileType } from "../codegen/Types.sol";
 import { addressToEntity } from "../Utils.sol";
 import { Direction, CharacterSpecies } from "../codegen/Types.sol";
 
-import "forge-std/console.sol";
-
 contract CharacterSystem is System {
     function spawn(int16 x, int16 y) public {
-        TileType destinationTile = Tile.get(x, y, uint32(0));
+        TileType destinationTile = Tile.get(x, y, uint32(1));
         require(destinationTile == TileType.Ground, "Can only spawn on the ground");
         bytes32 player = addressToEntity(_msgSender());
 
         HealthData memory playerHealth = Health.get(player);
         require(playerHealth.current == 0, "Player cannot spawn");
 
-        Position.set(player, x, y, uint32(0));
+        Position.set(player, x, y, uint32(1));
         Health.set(player, HealthData({
             current: 100,
             max: 100
@@ -68,7 +66,7 @@ contract CharacterSystem is System {
             x += 1;
         }
         TileType destinationTile = Tile.get(x, y, existingPosition.z);
-        require(destinationTile == TileType.Ground, "Can only spawn on the ground");
+        require(destinationTile == TileType.Ground, "Can only walk on the ground");
 
         Position.set(player, x, y, existingPosition.z);
         // for each 8 neighboring cells

@@ -7,4 +7,6 @@ import { TileType } from "./../Types.sol";
 
 interface IExploreSystem {
   function addTile(int8 x, int8 y, uint32 z, TileType tile) external;
+
+  function addTiles(int8[] calldata x, int8[] calldata y, uint32 z, TileType[] calldata tile) external;
 }

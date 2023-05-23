@@ -37,6 +37,9 @@ class Model {
     initiliazedField = false;
     generationComplete = false;
 
+    /**
+     * @type {Array<boolean[]>|null}
+     */
     wave = null;
     compatible = null;
     weightLogWeights = null;

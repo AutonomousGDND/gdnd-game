@@ -9,7 +9,7 @@ export const App = () => {
             <Container>
                 <Grid />
                 {/* Need to make things UNDER the controls not clickable somehow */}
-                {/* <Controls /> */}
+                 <Controls />
             </Container>
         </PixiProvider>
     );

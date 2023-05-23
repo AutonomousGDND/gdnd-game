@@ -7,7 +7,6 @@ import { useMUD } from "../MUDContext";
 import {
     Has,
     getComponentValueStrict,
-    getComponentValue,
 } from "@latticexyz/recs";
 import { BigNumber } from "ethers";
 import { useSocket } from "../contexts/socket";
@@ -38,8 +37,8 @@ const PlayerSprite = ({ x, y }: { x: number; y: number }) => {
     return (
         <Sprite
             image={playerImage}
-            scale={{ x: 0.9, y: 0.9 }}
-            position={{ x, y }}
+            scale={{ x: 1, y: 1 }}
+            position={[x * TILE_SIZE, y * TILE_SIZE]}
         />
     );
 };
@@ -59,7 +58,7 @@ export const Grid = () => {
     } = useMUD();
     // const tileIds = useEntityQuery([Has(Tile)]);
     const tileIds = useEntityQuery([Has(Tile)]);
-    const data = getComponentValue(Position, playerEntity);
+    const playerIds = useEntityQuery([Has(Position)])
     // console.log("playa", data);
 
     useEffect(() => {
@@ -85,7 +84,10 @@ export const Grid = () => {
                 };
                 return <MapTile key={entityId} tile={tileData} />;
             })}
-            {data && <PlayerSprite x={data.x} y={data.y} />}
+            {playerIds.filter(id => id === playerEntity).map(id => {
+                const data = getComponentValueStrict(Position, id);
+               return <PlayerSprite key={id} x={data.x} y={data.y} />
+            })}
         </Viewport>
     );
 };

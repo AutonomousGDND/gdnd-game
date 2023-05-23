@@ -21,4 +21,14 @@ contract ExploreSystem is System {
         require(exstisting == TileType.Fog, "That tile was already discovered");
         Tile.set(x, y, z, tile);
     }
+
+    function addTiles(int8[] calldata x, int8[] calldata y, uint32 z, TileType[] calldata tile) public {
+        require(x.length == y.length && x.length == tile.length, "Inconsistent calldata size");
+        for (uint256 i = 0; i < x.length; i++) {
+            TileType exstisting = Tile.get(x[i], y[i], z);
+            if (exstisting == TileType.Fog) {
+                Tile.set(x[i], y[i], z, tile[i]);
+            }
+        }
+    }
 }
