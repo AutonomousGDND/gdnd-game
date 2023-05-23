@@ -10,7 +10,7 @@ export const Controls = () => {
         systemCalls: { move },
     } = useMUD();
     return (
-        <>
+        <Container x={10} y={window.innerHeight - 160}>
             {/* UP */}
             <Sprite
                 interactive
@@ -57,6 +57,6 @@ export const Controls = () => {
                 x={150}
                 y={150}
             />
-        </>
+        </Container>
     );
 };

@@ -66,6 +66,7 @@ export const Grid = () => {
         // we have to run `resize` on app load in order for it to automatically resize to the window w/h
         // if we didn't run this, the app wouldn't be full screen until we mantually resized our window
         app.resize();
+        spawnPlayer(25, 25);
         window.spawnPlayer = spawnPlayer;
         window.move = move;
     }, [app]);
