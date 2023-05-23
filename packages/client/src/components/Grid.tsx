@@ -4,9 +4,14 @@ import { Viewport } from "./PixiViewport";
 import { useEffect } from "react";
 import { useEntityQuery } from "@latticexyz/react";
 import { useMUD } from "../MUDContext";
-import { Has, getComponentValueStrict } from "@latticexyz/recs";
+import {
+    Has,
+    getComponentValueStrict,
+    getComponentValue,
+} from "@latticexyz/recs";
 import { BigNumber } from "ethers";
 import { useSocket } from "../contexts/socket";
+import playerImage from "../player.png";
 import wall from "../wall.png";
 import ground from "../ground.png";
 
@@ -28,6 +33,17 @@ const MapTile = ({ tile }: { tile: MapTileProps }) => {
         />
     );
 };
+
+const PlayerSprite = ({ x, y }: { x: number; y: number }) => {
+    return (
+        <Sprite
+            image={playerImage}
+            scale={{ x: 0.9, y: 0.9 }}
+            position={{ x, y }}
+        />
+    );
+};
+
 type MapTileProps = {
     x: number;
     y: number;
@@ -37,11 +53,14 @@ type MapTileProps = {
 export const Grid = () => {
     const app = useApp();
     const {
-        components: { Tile },
+        network: { playerEntity },
+        components: { Tile, Position },
         systemCalls: { spawnPlayer, move },
     } = useMUD();
     // const tileIds = useEntityQuery([Has(Tile)]);
     const tileIds = useEntityQuery([Has(Tile)]);
+    const data = getComponentValue(Position, playerEntity);
+    // console.log("playa", data);
 
     useEffect(() => {
         // we have to run `resize` on app load in order for it to automatically resize to the window w/h
@@ -66,6 +85,7 @@ export const Grid = () => {
                 };
                 return <MapTile key={entityId} tile={tileData} />;
             })}
+            {data && <PlayerSprite x={data.x} y={data.y} />}
         </Viewport>
     );
 };

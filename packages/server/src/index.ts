@@ -87,7 +87,6 @@ async function main() {
             const y = Math.floor(index / width);
             if (!mytiles[`${x}-${y}`]) {
                 const receipt = await addTile(x, y);
-                console.log({ receipt });
                 mytiles[`${x}-${y}`] = true;
             }
         }

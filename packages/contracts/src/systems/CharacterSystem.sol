@@ -50,7 +50,6 @@ contract CharacterSystem is System {
     }
 
     function move(Direction direction) public {
-        console.log("Move %d", uint8(direction));
         bytes32 player = addressToEntity(_msgSender());
 
         uint8 exhaustion = Exhaustion.get(player);
