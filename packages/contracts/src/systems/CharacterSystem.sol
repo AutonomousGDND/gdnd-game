@@ -35,7 +35,7 @@ contract CharacterSystem is System {
         HealthData memory playerHealth = Health.get(player);
         require(playerHealth.current == 0, "Player cannot spawn");
 
-        Position.set(player, x, y, 0);
+        Position.set(player, x, y, uint32(0));
         Health.set(player, HealthData({
             current: 100,
             max: 100
@@ -45,6 +45,9 @@ contract CharacterSystem is System {
         Hunger.set(player, 50);
         Exhaustion.set(player, 50);
         Species.set(player, CharacterSpecies.Human);
+
+        // for each 8 neighboring cells
+        //   - if FOG -> collapse
     }
 
     function move(Direction direction) public {
@@ -52,7 +55,7 @@ contract CharacterSystem is System {
         bytes32 player = addressToEntity(_msgSender());
 
         uint8 exhaustion = Exhaustion.get(player);
-//        require(exhaustion < 100, "Character is exhausted");
+        require(exhaustion < 100, "Character is exhausted");
         PositionData memory existingPosition = Position.get(player);
         int16 x = existingPosition.x;
         int16 y = existingPosition.y;
@@ -66,7 +69,11 @@ contract CharacterSystem is System {
         } else if (direction == Direction.Right) {
             x += 1;
         }
+        TileType destinationTile = Tile.get(x, y, existingPosition.z);
+        require(destinationTile == TileType.Ground, "Can only spawn on the ground");
 
         Position.set(player, x, y, existingPosition.z);
+        // for each 8 neighboring cells
+        //   - if FOG -> collapse
     }
 }

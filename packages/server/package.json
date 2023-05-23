@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "wait-port localhost:8545 && nodemon ./src/index.ts",
+    "quick": "nodemon ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,7 +13,9 @@
   "license": "ISC",
   "dependencies": {
     "ethers": "5",
-    "socket.io": "^4.6.1"
+    "jimp": "^0.22.8",
+    "socket.io": "^4.6.1",
+    "wavefunctioncollapse": "^2.1.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",

@@ -13,16 +13,12 @@ import { TileType } from "../codegen/Types.sol";
  */
 contract ExploreSystem is System {
 
-    function _getRandomTile() internal view returns (TileType) {
-        return TileType((block.difficulty % 4) + 1);
-    }
+//    address dungeonMaster = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
 
-    function addRandomTile(int8 x, int8 y) public {
-        TileType tile = _getRandomTile();
-        TileType exstisting = Tile.get(x, y, uint32(0));
-        if (exstisting != TileType.Fog) {
-            revert();
-        }
-        Tile.set(x, y, uint32(0), tile);
+    function addTile(int8 x, int8 y, uint32 z, TileType tile) public {
+//        require(_msgSender() == dungeonMaster, "You are not the Dungeon Master");
+        TileType exstisting = Tile.get(x, y, z);
+        require(exstisting == TileType.Fog, "That tile was already discovered");
+        Tile.set(x, y, z, tile);
     }
 }
