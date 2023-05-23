@@ -11,7 +11,7 @@ import {
 } from "@latticexyz/recs";
 import { BigNumber } from "ethers";
 import { useSocket } from "../contexts/socket";
-import playerImage from "../player.png";
+import playerImage from "../player.gif";
 import wall from "../wall.png";
 import ground from "../ground.png";
 

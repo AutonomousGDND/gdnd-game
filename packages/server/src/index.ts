@@ -34,9 +34,13 @@ const provider = new ethers.providers.JsonRpcProvider(RPC);
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contract = new ethers.Contract(world.address, WorldAbi, signer);
 
-async function addTile(x: number, y: number): Promise<ContractReceipt | null> {
+async function addTile(
+    x: number,
+    y: number,
+    tileType: number
+): Promise<ContractReceipt | null> {
     try {
-        const tx = await contract.addTile(x, y, 1, 1);
+        const tx = await contract.addTile(x, y, 1, tileType);
         return tx.wait();
     } catch (err) {
         console.log("err", err);
@@ -68,7 +72,7 @@ async function main() {
     io.on("connection", (socket) => {
         console.log(`Socket connected ${socket.id}`);
         socket.on("add-tile", async ({ x, y }) => {
-            addTile(x, y);
+            addTile(x, y, 1);
         });
     });
     const pixels = Array(width * height * 36).fill(0);
@@ -83,11 +87,14 @@ async function main() {
             if (waves[index].filter(Boolean).length !== 1) {
                 continue;
             }
-            const x = index % width;
-            const y = Math.floor(index / width);
-            if (!mytiles[`${x}-${y}`]) {
-                const receipt = await addTile(x, y);
-                mytiles[`${x}-${y}`] = true;
+            const tileType = tileMaps[waves[index].findIndex(Boolean)];
+            for (let i = 0; i < tileType.length; i++) {
+                const x = index % width;
+                const y = Math.floor(index / width);
+                if (!mytiles[`${x}-${y}`]) {
+                    const receipt = await addTile(x, y, tileType[i]);
+                    mytiles[`${x}-${y}`] = true;
+                }
             }
         }
         if (Math.random() < 0.5) {
@@ -102,3 +109,51 @@ main().catch((e) => {
     console.error(e);
     process.exit(1);
 });
+
+// representation of 3x3 wave collapse tiles
+const tileMaps = [
+    // bend
+    [1, 0, 0, 1, 0, 0, 1, 1, 1],
+    [1, 1, 1, 1, 0, 0, 1, 0, 0],
+    [1, 1, 1, 0, 0, 1, 0, 0, 1],
+    [0, 0, 1, 0, 0, 1, 1, 1, 1],
+    // corner
+    [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0],
+
+    // coridor
+    [0, 1, 0, 0, 1, 0, 0, 1, 0],
+    [0, 0, 0, 1, 1, 1, 0, 1, 0],
+
+    // T
+    [1, 1, 1, 0, 1, 0, 0, 1, 0],
+    [0, 0, 1, 1, 1, 1, 0, 0, 1],
+    [0, 1, 0, 0, 1, 0, 1, 1, 1],
+    [1, 0, 0, 1, 1, 1, 1, 0, 0],
+
+    // CUBE
+    [1, 1, 1, 1, 1, 1, 1, 1, 1],
+
+    // floor
+    [0, 0, 0, 0, 0, 0, 1, 1, 1],
+    [1, 0, 0, 1, 0, 0, 1, 0, 0],
+    [1, 1, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 1, 0, 0, 1],
+
+    // small t
+    [0, 0, 0, 1, 1, 1, 0, 1, 0],
+    [0, 1, 0, 1, 1, 0, 0, 1, 0],
+    [0, 1, 0, 1, 1, 1, 0, 0, 0],
+    [0, 1, 0, 0, 1, 1, 0, 1, 0],
+
+    // turn
+    [0, 1, 0, 0, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 0, 1, 0],
+    [0, 0, 0, 1, 1, 0, 0, 1, 0],
+    [0, 1, 0, 1, 1, 0, 0, 0, 0],
+
+    // the void
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+];
