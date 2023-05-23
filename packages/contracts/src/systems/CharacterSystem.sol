@@ -27,7 +27,6 @@ import "forge-std/console.sol";
 
 contract CharacterSystem is System {
     function spawn(int16 x, int16 y) public {
-        console.log("Spawn !!!!");
         TileType destinationTile = Tile.get(x, y, uint32(0));
         require(destinationTile == TileType.Ground, "Can only spawn on the ground");
         bytes32 player = addressToEntity(_msgSender());

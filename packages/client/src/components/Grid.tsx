@@ -62,7 +62,7 @@ export const Grid = () => {
                 const tileData = {
                     x,
                     y,
-                    backgroundImage
+                    backgroundImage,
                 };
                 return <MapTile key={entityId} tile={tileData} />;
             })}

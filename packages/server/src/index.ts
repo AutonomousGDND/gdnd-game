@@ -1,18 +1,14 @@
 import "dotenv/config";
 import { Server } from "socket.io";
-import { ethers } from "ethers";
+import { ContractReceipt, ethers } from "ethers";
 import { IWorld__factory } from "../../contracts/types/ethers-contracts";
 import worldsJson from "../../contracts/worlds.json";
 import Jimp from "jimp";
 // @ts-ignore
-import { SimpleTiledModel } from './lib/wfc';
+import { SimpleTiledModel } from "./lib/wfc";
 import { tileData } from "./lib/simple-tiled-model-data";
 
-if (
-    !process.env.PRIVATE_KEY ||
-    !process.env.PORT ||
-    !process.env.CHAIN_ID
-) {
+if (!process.env.PRIVATE_KEY || !process.env.PORT || !process.env.CHAIN_ID) {
     throw new Error("Missing environment variables");
 }
 
@@ -35,28 +31,25 @@ if (!world) {
     throw new Error("World not found");
 }
 const provider = new ethers.providers.JsonRpcProvider(RPC);
-const signer = new ethers.Wallet(
-    process.env.PRIVATE_KEY,
-    provider
-);
+const signer = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 const contract = new ethers.Contract(world.address, WorldAbi, signer);
 
-
-function addTile(x: number, y: number): void {
-    contract.addTile(x, y, 1, 1).catch((e: unknown) => {
-        console.log('Could not add tile');
-        console.error(e);
-    });
+async function addTile(x: number, y: number): Promise<ContractReceipt | null> {
+    try {
+        const tx = await contract.addTile(x, y, 1, 1);
+        return tx.wait();
+    } catch (err) {
+        console.log("err", err);
+        return null;
+    }
 }
 
-const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function main() {
-    console.log(process.cwd());
-    console.log("Server listening");
     for (const tile of tileData.tiles) {
         const image = await Jimp.read(`src/models/${tile.name}.png`);
-        if (tile.symmetry === 'X') {
+        if (tile.symmetry === "X") {
             tile.bitmap = [image.bitmap];
         } else {
             tile.bitmap = [
@@ -79,21 +72,30 @@ async function main() {
         });
     });
     const pixels = Array(width * height * 36).fill(0);
+    const mytiles: Record<string, boolean> = {};
     while (x * y < 100) {
         await delay(1000);
         model.walk(x, y);
         model.graphics(pixels);
-        const index = y * width * 36 + x * 36;
-        const [r, g, b] = pixels.slice(index, index + 3);
-        console.log({ r, g, b });
 
-        // addTile(x, y);
-        // console.log('Added tile', x, y);
-        // if (Math.random() < 0.5) {
-        //     x++;
-        // } else {
-        //     y++;
-        // }
+        const waves: Array<boolean[]> = model.wave || [];
+        for (let index = 0; index < waves.length; index++) {
+            if (waves[index].filter(Boolean).length !== 1) {
+                continue;
+            }
+            const x = index % width;
+            const y = Math.floor(index / width);
+            if (!mytiles[`${x}-${y}`]) {
+                const receipt = await addTile(x, y);
+                console.log({ receipt });
+                mytiles[`${x}-${y}`] = true;
+            }
+        }
+        if (Math.random() < 0.5) {
+            x++;
+        } else {
+            y++;
+        }
     }
 }
 
